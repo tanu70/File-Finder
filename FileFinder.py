@@ -13,6 +13,8 @@ class FileFinder:
     __searchingPhrase: str = ''
     __pendingSearch = False
 
+    __totalMatchedFiles:int = 0
+
     def __init__(self) -> None:
         self.__guiWindow = FileSearchGUI()
         self.__initiateGUI()
@@ -45,13 +47,13 @@ class FileFinder:
         self.__guiWindow.displaySearchingGUI(setDir= self.getCurrentDirectory())
         time.sleep(0.5)
         self.retriveSavedIndexing()
-        self.filesNeedToUpdate()
+        # self.filesNeedToUpdate()
         return
 
 
     def retriveSavedIndexing(self):
         self.__guiWindow.disableInteraction()
-        self.__guiWindow.ClearOutputField()
+        self.clearOutputField()
         self.__guiWindow.showProgressBar(title= 'Indexing Files...')
         self.__dataModel.retriveSavedFileIndexing()
         return
@@ -60,7 +62,7 @@ class FileFinder:
     def directoryUpdate(self, dirUrl = None):
         self.__isIndexingInProgress = True
         self.__guiWindow.disableInteraction()
-        self.__guiWindow.ClearOutputField()
+        self.clearOutputField()
         self.__guiWindow.showProgressBar(title =  'Indexing Files...')
         self.__dataModel.updateChosenDir(dirUrl= dirUrl)
         self.__guiWindow.updateSelectedDirInBrowsing(updatedDir = dirUrl)
@@ -80,7 +82,7 @@ class FileFinder:
             self.filesNeedToUpdate()
             
         self.__isSearchingInProgress = True
-        self.__guiWindow.ClearOutputField()
+        self.clearOutputField()
         self.__guiWindow.showProgressBar(title= 'Searching Files...')
         searchThread = Thread(target = self.__dataModel.searchInFiles,args= (phrase,))
         searchThread.start()
@@ -93,16 +95,25 @@ class FileFinder:
 
 
     def updateResultsInGUI(self, matchedFiles):
-        self.__guiWindow.updateGuiWithResult(matchedFiles)
+        self.__totalMatchedFiles += len(matchedFiles)
+        self.__guiWindow.updateGuiWithResult(matchedFiles, totalFiles= self.__totalMatchedFiles)
+        return
+
+
+    def clearOutputField(self):
+        self.__guiWindow.ClearOutputField()
+        self.__totalMatchedFiles = 0
         return
 
 
     def updateProgressValue(self, value):
         self.__guiWindow.updateProgressBarValue(value = value)
+        return
 
 
     def searchingCompletionUpdate(self):
         self.__isSearchingInProgress = False
+        self.__guiWindow.updateGuiWithResult([],totalFiles= self.__totalMatchedFiles)
         self.__guiWindow.closeProgress()
         return
 

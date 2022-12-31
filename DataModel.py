@@ -150,7 +150,7 @@ class DataModel:
                 except KeyError:
                     print('--- Failed to Send Matched File Update ---', KeyError)
 
-        print('- lastUpdated -', lastUpdatedResultInd)
+        # print('- lastUpdated -', lastUpdatedResultInd)
         try:
             lastUpdatedResultInd = self.__sendMatchedFileList(fromInd= lastUpdatedResultInd + 1)
             self.fileSearchingCompletionCallback()
@@ -165,14 +165,14 @@ class DataModel:
         for idx in range(fromInd, len(self.__matchedFileIndex), 1):
             retList.append(self.__fileNameList[self.__matchedFileIndex[idx]])
         
-        print('check check -', fromInd, len(self.__matchedFileIndex), retList)
+        # print('check check -', fromInd, len(self.__matchedFileIndex), retList)
         if len(retList) == 0:
             return fromInd - 1
 
         try:
             self.updateGuiWithResultCallback(retList)
-        except:
-            print('--- FAILED!!! Couldn\'t send matched list ---')
+        except KeyError:
+            print('--- FAILED!!! Couldn\'t send matched list ---', KeyError)
         
         return len(self.__matchedFileIndex) - 1
 
@@ -343,19 +343,19 @@ class DataModel:
     def __createFakeProgress(self, targetTime = 5):
         progressThread = Thread(target= self.__FakeProgress, args= (targetTime,))
         progressThread.start()
+        return
         
 
     def __FakeProgress(self, targetTime = 5):
         progressUnit = 95/targetTime
-        print('--- came to fake progress ---')
         for i in range(0,targetTime,1):
             time.sleep(1)
             if self.__shouldStopFakeProgress:
                 return
             try:
                 self.progressValueUpdateCallback((i+1)*progressUnit)
-            except:
-                print('-- Auto progress UpdateFailed --')
+            except KeyError:
+                print('-- Auto progress UpdateFailed --', KeyError)
         return
 
 
