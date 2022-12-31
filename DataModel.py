@@ -9,6 +9,7 @@ class DataModel:
     __matchedFileIndex: list[int] = []
     __chosenDir = None
     __indexingSaveFileName = 'fileIndexing.json'
+    __dirSaveFileName = 'chosenDir.json'
     __currentDirectoryLastUpdateTime = 0.0
 
     __mapingFiles = {}
@@ -36,15 +37,19 @@ class DataModel:
 
     def getSelectedDir(self):
         return self.__chosenDir
-    
+
 
     def initiateSelectedDir(self):
         tmpDic = {}
-        with open('chosenDir.json','r') as ir:
+        if os.path.exists(self.__dirSaveFileName) is False:
+            open(self.__dirSaveFileName,'w')
+        
+        with open(self.__dirSaveFileName,'r') as ir:
             try:
                 tmpDic = json.load(ir)
                 self.__chosenDir = tmpDic['dir']
             except:
+                print('--tanu--')
                 self.__chosenDir = None    
 
 
@@ -52,14 +57,14 @@ class DataModel:
         print('--- Came To Update Chosen Dir ---')
         if dirUrl == None:
             tmpDic = {}
-            with open('chosenDir.json','r') as ir:
+            with open(self.__dirSaveFileName,'r') as ir:
                 try:
                     tmpDic = json.load(ir)
                     dirUrl = tmpDic['dir']
                 except:
                     pass 
         else:
-            with open('chosenDir.json','w') as ir:
+            with open(self.__dirSaveFileName,'w') as ir:
                 tmpDic = {'dir': dirUrl}
                 tmpJson = json.dumps(tmpDic)
                 ir.write(tmpJson)
@@ -314,6 +319,9 @@ class DataModel:
 
     def retriveSavedFileIndexing(self):
         print('Came to retrive')
+        if os.path.exists(self.__indexingSaveFileName) is False:
+            with open(self.__indexingSaveFileName,'w') as ff:
+                ff.close()
         self.__createFakeProgress(5)
         with open(self.__indexingSaveFileName,'r') as fjson:
             try:

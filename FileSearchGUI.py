@@ -131,6 +131,9 @@ class FileSearchGUI:
         return
 
 
+    def disableSearchButton(self):
+        self.__fileSearchButton.update(disabled = True)
+
     def enableInteraction(self):
         self.__dirBrowseButton.update(disabled= False)
         self.__fileSearchButton.update(disabled= False)

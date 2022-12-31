@@ -46,7 +46,11 @@ class FileFinder:
     def startApp(self):
         self.__guiWindow.displaySearchingGUI(setDir= self.getCurrentDirectory())
         time.sleep(0.5)
-        self.retriveSavedIndexing()
+        if self.__dataModel.getSelectedDir() is None:
+            self.__guiWindow.disableSearchButton()
+        else:
+            self.retriveSavedIndexing()
+        
         # self.filesNeedToUpdate()
         return
 
@@ -122,6 +126,8 @@ class FileFinder:
         self.__isIndexingInProgress = False
         self.__guiWindow.closeProgress()
         self.__guiWindow.enableInteraction()
+        if self.__dataModel.getSelectedDir() is None:
+            self.__guiWindow.disableSearchButton()
         return
 
     
@@ -132,6 +138,8 @@ class FileFinder:
 
     
     def savedIndexingRetriveFailed(self):
+        self.__guiWindow.closeProgress()
+        self.__guiWindow.enableInteraction()
         if self.getCurrentDirectory() is not None:
             self.directoryUpdate()
         return
